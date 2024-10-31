@@ -1,26 +1,21 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from typing import AsyncGenerator
+
+from sqlalchemy import MetaData
+from sqlalchemy.ext.asyncio import (
+    AsyncSession, async_sessionmaker, create_async_engine)
+from sqlalchemy.orm import declarative_base
+
+from config import DB_HOST, DB_PORT, DB_USER, DB_NAME, DB_PASS
+
+DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+Base = declarative_base()
+
+metadata = MetaData()
+
+engine = create_async_engine(DATABASE_URL)
+async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
-engine = create_async_engine("sqlite+aiosqlite:///tasks.db")
-new_session = async_sessionmaker(engine, expire_on_commit=False)
-
-async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Model.metadata.create_all)
-
-async def delete_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Model.metadata.drop_all)
-
-
-class Model(DeclarativeBase):
-    pass
-
-
-class TaskOrm(Model):
-    __tablename__ = 'tasks'
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    description: Mapped[str | None]
-    status: Mapped[str]
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
+        yield session
