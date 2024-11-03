@@ -1,6 +1,7 @@
 import ast
 from typing import Optional
 
+import redis
 from fastapi import HTTPException, status
 from jwt import InvalidTokenError
 from sqlalchemy import select, update, delete, insert
@@ -11,6 +12,9 @@ from config import EXPIRE_MINUTES_ACCESS, EXPIRE_MINUTES_REFRESH
 from models import task, user
 from tasks.schemas import STaskAdd, STask
 from auth.utils import hash_password, validate_password, create_jwt, decode_jwt
+
+
+client_redis = redis.Redis(host='localhost', port=6379, db=0)
 
 
 class TaskRepository:
@@ -90,9 +94,13 @@ class UserRepository:
             payload = decode_jwt(refresh_token)
             if payload.get('token_type') != 'refresh':
                 raise token_error
+            user_id = payload.get('sub')
+            check_token_in_redis = client_redis.get(str(user_id))
+            if check_token_in_redis.decode('utf-8') == refresh_token:
+                return user_id
+            raise token_error
         except InvalidTokenError:
             raise token_error
-        return payload.get('sub')
 
     @classmethod
     async def get_user_id_for_auth(
@@ -132,4 +140,5 @@ class UserRepository:
             token_data=jwt_payload,
             expire_minutes=EXPIRE_MINUTES_REFRESH,
         )
+        client_redis.set(str(user_id), refresh_token, ex=EXPIRE_MINUTES_REFRESH*60)
         return refresh_token

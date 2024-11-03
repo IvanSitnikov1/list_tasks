@@ -1,4 +1,20 @@
 services:
+  app:
+    build:
+      context: .
+    container_name: fastapi_app
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: fastapi
+      DB_USER: admin
+      DB_PASS: admin
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+      - redis
+
   postgres:
     image: postgres:latest
     container_name: postgres_fastapi
@@ -9,3 +25,10 @@ services:
     ports:
       - 5432:5432
     restart: always
+    
+  redis:
+    image: redis:latest
+    container_name: redis_fastapi
+    ports:
+      - 6379:6379
+    restart: unless-stopped
