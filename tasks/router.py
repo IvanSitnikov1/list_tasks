@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.schemas import SUser
 from auth.utils import decode_jwt
+from http_erors import token_error
 from repository import TaskRepository, UserRepository
 from database import get_async_session
 from tasks.schemas import STaskAdd, STaskId, STask
@@ -26,10 +27,6 @@ async def get_current_user(
         token: str = Depends(oauth2_scheme),
         session: AsyncSession = Depends(get_async_session),
 ) -> SUser:
-    token_error = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Invalid token',
-    )
     try:
         payload = decode_jwt(token=token)
         if payload.get('token_type') != 'access':

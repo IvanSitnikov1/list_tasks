@@ -3,11 +3,7 @@ import jwt
 
 import bcrypt
 
-
-with open('certs/jwt-public.pem', 'r') as f:
-    PUBLIC_KEY = f.read()
-with open('certs/jwt-private.pem', 'r') as f:
-    PRIVATE_KEY = f.read()
+from config import PUBLIC_KEY, PRIVATE_KEY
 
 
 def encode_jwt(

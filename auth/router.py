@@ -6,6 +6,7 @@ from auth.schemas import SUserAdd, TokenInfo
 from repository import UserRepository
 from database import get_async_session
 
+
 router = APIRouter(
     prefix='/auth',
     tags=['auth'],

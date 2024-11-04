@@ -9,8 +9,10 @@ DB_NAME = os.environ.get("DB_NAME")
 DB_USER = os.environ.get("DB_USER")
 DB_PASS = os.environ.get("DB_PASS")
 
-PRIVATE_KEY = os.environ.get("PRIVATE_KEY")
-PUBLIC_KEY = os.environ.get("PRIVATE_KEY")
+with open('certs/jwt-public.pem', 'r') as f:
+    PUBLIC_KEY = f.read()
+with open('certs/jwt-private.pem', 'r') as f:
+    PRIVATE_KEY = f.read()
 
 EXPIRE_MINUTES_ACCESS = 1
-EXPIRE_MINUTES_REFRESH = 3
+EXPIRE_MINUTES_REFRESH = 1440
