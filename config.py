@@ -14,5 +14,5 @@ with open('certs/jwt-public.pem', 'r') as f:
 with open('certs/jwt-private.pem', 'r') as f:
     PRIVATE_KEY = f.read()
 
-EXPIRE_MINUTES_ACCESS = 1
+EXPIRE_MINUTES_ACCESS = 5
 EXPIRE_MINUTES_REFRESH = 1440
