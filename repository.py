@@ -14,7 +14,7 @@ from tasks.schemas import STaskAdd, STask
 from auth.utils import hash_password, validate_password, create_jwt, decode_jwt
 
 
-client_redis = redis.Redis(host='redis', port=6379, db=0)
+client_redis = redis.Redis(host='localhost', port=6379, db=0)
 
 
 class TaskRepository:
